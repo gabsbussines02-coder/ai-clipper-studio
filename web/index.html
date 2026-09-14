@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>AI Clipper Studio V7</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{
+  background:#0b1020;
+  color:#e5e7eb;
+  font-family:Inter,system-ui,sans-serif;
+}
+.glass{
+  background:rgba(17,24,39,.82);
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(14px);
+}
+.card{
+  background:#111827;
+  border:1px solid #263244;
+}
+input,textarea,select{
+  background:#0b1220!important;
+  border:1px solid #334155!important;
+  color:#fff!important;
+}
+button{transition:.2s}
+button:hover{transform:translateY(-1px)}
+.score{
+  background:linear-gradient(135deg,#7c3aed,#2563eb);
+}
+</style>
+</head>
+
+<body>
+
+<header class="glass sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div>
+      <div class="text-xl font-black">
+        ⚡ AI Clipper Studio
+      </div>
+      <div class="text-xs text-slate-400">
+        V7 Cloud Multi-Clip
+      </div>
+    </div>
+
+    <div id="health"
+         class="text-xs px-3 py-2 rounded-full bg-slate-800">
+      ● Checking cloud...
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+
+<section class="mb-6">
+  <div class="glass rounded-3xl p-6">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+
+      <div>
+        <h1 class="text-3xl md:text-5xl font-black leading-tight">
+          Ubah Video Panjang
+          <span class="text-violet-400">Menjadi Shorts</span>
+        </h1>
+
+        <p class="text-slate-400 mt-3 max-w-2xl">
+          Upload video yang Anda miliki, biarkan AI menemukan Golden Moments,
+          lalu buat beberapa video Shorts 9:16 sekaligus.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 text-center text-xs">
+        <div class="card rounded-xl p-3">
+          <div class="text-xl">🤖</div>
+          <div>AI</div>
+        </div>
+        <div class="card rounded-xl p-3">
+          <div class="text-xl">✂️</div>
+          <div>Clip</div>
+        </div>
+        <div class="card rounded-xl p-3">
+          <div class="text-xl">📱</div>
+          <div>9:16</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<section class="grid lg:grid-cols-3 gap-5">
+
+<!-- LEFT -->
+<div class="lg:col-span-2 space-y-5">
+
+<div class="card rounded-2xl p-5">
+
+<h2 class="text-lg font-bold mb-4">
+1. Sumber Video
+</h2>
+
+<label class="text-sm text-slate-400">
+YouTube URL
+</label>
+
+<div class="flex gap-2 mt-2">
+<input id="youtube"
+       class="w-full rounded-xl px-4 py-3"
+       placeholder="https://youtube.com/watch?v=...">
+
+<button onclick="openYoutube()"
+        class="px-4 rounded-xl bg-red-600 font-bold">
+  Buka
+</button>
+</div>
+
+<p class="text-xs text-slate-500 mt-2">
+URL digunakan untuk identifikasi/preview. Untuk proses rendering,
+gunakan video yang Anda miliki atau berhak memprosesnya.
+</p>
+
+<hr class="border-slate-700 my-5">
+
+<label class="text-sm text-slate-400">
+Upload video sumber
+</label>
+
+<input id="video"
+       type="file"
+       accept="video/*"
+       class="w-full mt-2 rounded-xl px-4 py-3">
+
+<div id="fileInfo"
+     class="text-xs text-slate-500 mt-2">
+Belum ada video.
+</div>
+
+</div>
+
+
+<!-- TRANSCRIPT -->
+<div class="card rounded-2xl p-5">
+
+<div class="flex justify-between items-center gap-3">
+<h2 class="text-lg font-bold">
+2. Transcript
+</h2>
+
+<button onclick="transcribe()"
+        id="transcribeBtn"
+        class="px-4 py-2 rounded-xl bg-blue-600 font-bold">
+🎙️ Auto Transcribe
+</button>
+</div>
+
+<textarea id="transcript"
+          rows="9"
+          class="w-full mt-4 rounded-xl p-4"
+          placeholder="Transcript akan muncul di sini..."></textarea>
+
+</div>
+
+
+<!-- AI -->
+<div class="card rounded-2xl p-5">
+
+<div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
+
+<div>
+<h2 class="text-lg font-bold">
+3. AI Golden Moments
+</h2>
+
+<p class="text-xs text-slate-500">
+AI mencari bagian yang paling berpotensi menjadi Shorts.
+</p>
+</div>
+
+<button onclick="analyze()"
+        id="analyzeBtn"
+        class="px-5 py-3 rounded-xl bg-violet-600 font-bold">
+🧠 Cari Golden Moments
+</button>
+
+</div>
+
+<div id="moments"
+     class="mt-5 space-y-3">
+
+<div class="text-center text-slate-500 py-8">
+Belum ada hasil AI.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT -->
+<div class="space-y-5">
+
+<div class="card rounded-2xl p-5">
+
+<h2 class="font-bold mb-4">
+🎬 Clip Terpilih
+</h2>
+
+<div id="selected"
+     class="text-sm text-slate-500">
+Belum memilih clip.
+</div>
+
+</div>
+
+
+<div class="card rounded-2xl p-5">
+
+<h2 class="font-bold mb-4">
+⚙️ Render
+</h2>
+
+<div class="grid grid-cols-2 gap-3">
+
+<div class="bg-slate-900 rounded-xl p-3">
+<div class="text-xs text-slate-500">Format</div>
+<div class="font-bold">MP4</div>
+</div>
+
+<div class="bg-slate-900 rounded-xl p-3">
+<div class="text-xs text-slate-500">Ratio</div>
+<div class="font-bold">9:16</div>
+</div>
+
+<div class="bg-slate-900 rounded-xl p-3">
+<div class="text-xs text-slate-500">Resolution</div>
+<div class="font-bold">1080×1920</div>
+</div>
+
+<div class="bg-slate-900 rounded-xl p-3">
+<div class="text-xs text-slate-500">Output</div>
+<div class="font-bold">Shorts</div>
+</div>
+
+</div>
+
+<button onclick="renderClips()"
+        id="renderBtn"
+        class="w-full mt-5 py-4 rounded-xl bg-green-600 font-black text-lg">
+✂️ RENDER SELECTED CLIPS
+</button>
+
+<div id="progress"
+     class="hidden mt-4">
+
+<div class="flex justify-between text-xs mb-2">
+<span>Rendering...</span>
+<span id="progressText">0%</span>
+</div>
+
+<div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+<div id="bar"
+     class="h-full bg-green-500"
+     style="width:0%">
+</div>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card rounded-2xl p-5">
+
+<h2 class="font-bold mb-4">
+📦 Hasil Shorts
+</h2>
+
+<div id="results"
+     class="space-y-3 text-sm text-slate-500">
+Belum ada hasil.
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+<script>
+
+let moments=[];
+let selected=[];
+
+
+function $(id){
+  return document.getElementById(id);
+}
+
+
+/* HEALTH */
+
+async function health(){
+
+  try{
+
+    const r=await fetch('/api/health');
+    const j=await r.json();
+
+    $('health').innerHTML=
+      '🟢 Cloud Online · V'+(j.version||'7');
+
+    $('health').className=
+      'text-xs px-3 py-2 rounded-full bg-green-900 text-green-300';
+
+  }catch(e){
+
+    $('health').innerHTML=
+      '🔴 Cloud Offline';
+
+    $('health').className=
+      'text-xs px-3 py-2 rounded-full bg-red-900 text-red-300';
+
+  }
+
+}
+
+health();
+
+
+/* FILE */
+
+$('video').addEventListener('change',function(){
+
+  const f=this.files[0];
+
+  if(!f){
+    $('fileInfo').textContent='Belum ada video.';
+    return;
+  }
+
+  const mb=(f.size/1024/1024).toFixed(1);
+
+  $('fileInfo').textContent=
+    `${f.name} · ${mb} MB`;
+
+});
+
+
+/* YOUTUBE */
+
+function openYoutube(){
+
+  const url=$('youtube').value.trim();
+
+  if(!url){
+    alert('Masukkan URL YouTube.');
+    return;
+  }
+
+  window.open(url,'_blank');
+
+}
+
+
+/* TRANSCRIBE */
+
+async function transcribe(){
+
+  const file=$('video').files[0];
+
+  if(!file){
+    alert('Upload video sumber terlebih dahulu.');
+    return;
+  }
+
+  $('transcribeBtn').disabled=true;
+  $('transcribeBtn').textContent='⏳ Transcribing...';
+
+  try{
+
+    const fd=new FormData();
+    fd.append('video',file);
+
+    const r=await fetch(
+      '/api/transcribe',
+      {
+        method:'POST',
+        body:fd
+      }
+    );
+
+    const j=await r.json();
+
+    if(!r.ok)
+      throw new Error(j.error||'Transcription gagal');
+
+    $('transcript').value=j.text||'';
+
+  }catch(e){
+
+    alert(e.message);
+
+  }finally{
+
+    $('transcribeBtn').disabled=false;
+    $('transcribeBtn').textContent='🎙️ Auto Transcribe';
+
+  }
+
+}
+
+
+/* ANALYZE */
+
+async function analyze(){
+
+  const text=$('transcript').value.trim();
+
+  if(!text){
+    alert('Transcript masih kosong.');
+    return;
+  }
+
+  $('analyzeBtn').disabled=true;
+  $('analyzeBtn').textContent='⏳ AI sedang menganalisis...';
+
+  try{
+
+    const r=await fetch(
+      '/api/analyze',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          transcript:text
+        })
+      }
+    );
+
+    const j=await r.json();
+
+    if(!r.ok)
+      throw new Error(j.error||'AI analysis gagal');
+
+    moments=j.moments||[];
+
+    renderMoments();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }finally{
+
+    $('analyzeBtn').disabled=false;
+    $('analyzeBtn').textContent='🧠 Cari Golden Moments';
+
+  }
+
+}
+
+
+/* MOMENTS */
+
+function renderMoments(){
+
+  if(!moments.length){
+
+    $('moments').innerHTML=
+      '<div class="text-center text-slate-500 py-8">Tidak ada Golden Moment.</div>';
+
+    return;
+  }
+
+  $('moments').innerHTML=
+    moments.map((m,i)=>{
+
+      const checked=
+        selected.some(x=>x.index===i);
+
+      return `
+      <div class="rounded-2xl border border-slate-700 bg-slate-900 p-4">
+
+        <div class="flex items-start gap-3">
+
+          <input type="checkbox"
+                 class="mt-1 w-5 h-5"
+                 ${checked?'checked':''}
+                 onchange="toggleMoment(${i},this.checked)">
+
+          <div class="flex-1">
+
+            <div class="flex flex-wrap gap-2 items-center">
+
+              <span class="score px-3 py-1 rounded-full text-xs font-black">
+                ${m.score||0}/100
+              </span>
+
+              <span class="text-xs text-slate-400">
+                ${formatTime(m.start)} → ${formatTime(m.end)}
+              </span>
+
+              <span class="text-xs bg-slate-800 px-2 py-1 rounded-full">
+                ${m.emotion||'curiosity'}
+              </span>
+
+            </div>
+
+            <div class="font-bold mt-3">
+              ${escapeHtml(m.title||'Golden Moment')}
+            </div>
+
+            <div class="text-sm text-violet-300 mt-2">
+              🎯 ${escapeHtml(m.hook||'Hook belum tersedia')}
+            </div>
+
+            <div class="text-xs text-slate-500 mt-2">
+              ${escapeHtml(m.reason||'')}
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+      `;
+
+    }).join('');
+
+}
+
+
+function toggleMoment(index,checked){
+
+  if(checked){
+
+    if(!selected.some(x=>x.index===index)){
+
+      selected.push({
+        index,
+        ...moments[index]
+      });
+
+    }
+
+  }else{
+
+    selected=
+      selected.filter(x=>x.index!==index);
+
+  }
+
+  renderSelected();
+
+}
+
+
+function renderSelected(){
+
+  if(!selected.length){
+
+    $('selected').innerHTML=
+      'Belum memilih clip.';
+
+    return;
+  }
+
+  $('selected').innerHTML=
+    `<div class="space-y-2">
+      <div class="text-green-400 font-bold">
+        ${selected.length} clip dipilih
+      </div>
+
+      ${selected.map((m,i)=>`
+        <div class="bg-slate-900 rounded-xl p-3">
+          <div class="text-xs text-slate-500">
+            Clip ${i+1}
+          </div>
+          <div class="font-bold mt-1">
+            ${escapeHtml(m.title||'Short')}
+          </div>
+          <div class="text-xs text-slate-400 mt-1">
+            ${formatTime(m.start)} - ${formatTime(m.end)}
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+
+}
+
+
+/* RENDER */
+
+async function renderClips(){
+
+  const file=$('video').files[0];
+
+  if(!file){
+    alert('Upload video sumber terlebih dahulu.');
+    return;
+  }
+
+  if(!selected.length){
+    alert('Pilih minimal 1 Golden Moment.');
+    return;
+  }
+
+  $('renderBtn').disabled=true;
+  $('renderBtn').textContent='⏳ MEMPROSES...';
+
+  $('progress').classList.remove('hidden');
+
+  try{
+
+    const fd=new FormData();
+
+    fd.append('video',file);
+
+    fd.append(
+      'clips',
+      JSON.stringify(selected)
+    );
+
+    const r=await fetch(
+      '/api/jobs',
+      {
+        method:'POST',
+        body:fd
+      }
+    );
+
+    const j=await r.json();
+
+    if(!r.ok)
+      throw new Error(j.error||'Render gagal');
+
+    await pollJob(j.job.id);
+
+  }catch(e){
+
+    alert(e.message);
+
+  }finally{
+
+    $('renderBtn').disabled=false;
+    $('renderBtn').textContent=
+      '✂️ RENDER SELECTED CLIPS';
+
+  }
+
+}
+
+
+/* JOB */
+
+async function pollJob(id){
+
+  return new Promise((resolve,reject)=>{
+
+    const timer=setInterval(async()=>{
+
+      try{
+
+        const r=await fetch('/api/jobs/'+id);
+        const j=await r.json();
+
+        const p=j.progress||0;
+
+        $('bar').style.width=p+'%';
+        $('progressText').textContent=p+'%';
+
+        if(j.status==='done'){
+
+          clearInterval(timer);
+
+          $('bar').style.width='100%';
+          $('progressText').textContent='100%';
+
+          renderResults(j.files||[]);
+
+          resolve();
+
+        }
+
+        if(j.status==='error'){
+
+          clearInterval(timer);
+          reject(new Error(j.error||'Render gagal'));
+
+        }
+
+      }catch(e){
+
+        clearInterval(timer);
+        reject(e);
+
+      }
+
+    },1500);
+
+  });
+
+}
+
+
+/* RESULTS */
+
+function renderResults(files){
+
+  if(!files.length){
+
+    $('results').textContent=
+      'Tidak ada file hasil.';
+
+    return;
+  }
+
+  $('results').innerHTML=
+    files.map((f,i)=>`
+
+      <div class="rounded-xl bg-slate-900 p-4">
+
+        <div class="font-bold">
+          🎬 ${escapeHtml(f.title||'Short '+(i+1))}
+        </div>
+
+        <div class="text-xs text-violet-300 mt-1">
+          ${escapeHtml(f.hook||'')}
+        </div>
+
+        <a href="${f.url}"
+           target="_blank"
+           class="inline-block mt-3 px-4 py-2 rounded-lg bg-green-600 text-white font-bold">
+          ▶ Buka / Download MP4
+        </a>
+
+      </div>
+
+    `).join('');
+
+}
+
+
+/* HELPERS */
+
+function formatTime(sec){
+
+  sec=Number(sec)||0;
+
+  const h=Math.floor(sec/3600);
+  const m=Math.floor((sec%3600)/60);
+  const s=Math.floor(sec%60);
+
+  if(h)
+    return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+  return `${m}:${String(s).padStart(2,'0')}`;
+
+}
+
+
+function escapeHtml(str){
+
+  return String(str||'')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+
+}
+
+</script>
+
+</body>
+</html>
