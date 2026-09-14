@@ -1,0 +1,1 @@
+const C='clipper-v7';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(['/','/manifest.webmanifest','/icons/icon.svg']))));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(x=>x||fetch(e.request).catch(()=>caches.match('/'))))});
